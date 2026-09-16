@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Quiz 🧠 ✦ StarBalance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --morado: #9333ea; --morado-claro: #c084fc;
+  --rosa: #ec4899; --cian: #22d3ee;
+  --espacio: #0b0620; --espacio-2: #170b33;
+  --fuente-titulo: 'Space Grotesk', sans-serif;
+  --fuente-texto: 'Nunito', sans-serif;
+}
+body {
+  font-family: var(--fuente-texto);
+  background: radial-gradient(ellipse at top, var(--espacio-2), var(--espacio) 70%);
+  color: white;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px 20px;
+}
+.quiz-card {
+  background: rgba(28, 16, 53, 0.85);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  border-radius: 24px; padding: 40px 34px;
+  width: 100%; max-width: 620px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(147, 51, 234, 0.4);
+}
+.quiz-logo {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-bottom: 20px;
+}
+.quiz-logo img { width: 50px; height: 50px; }
+.quiz-logo span {
+  font-family: var(--fuente-titulo); font-weight: 700; font-size: 1.1rem;
+  background: linear-gradient(90deg, #fff, var(--morado-claro), var(--rosa));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+h1 {
+  font-family: var(--fuente-titulo);
+  font-size: 1.6rem; text-align: center; margin-bottom: 6px;
+  background: linear-gradient(90deg, #fff, var(--morado-claro), var(--rosa));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.sub { text-align: center; color: #e9d5ff; opacity: 0.7; font-size: 0.9rem; margin-bottom: 28px; }
+
+.progreso-quiz {
+  height: 6px; background: rgba(255,255,255,0.1);
+  border-radius: 99px; overflow: hidden; margin-bottom: 24px;
+}
+.progreso-barra {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--morado), var(--rosa));
+  transition: width 0.4s ease;
+}
+.pregunta-num {
+  color: var(--morado-claro); font-size: 0.8rem;
+  font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.pregunta {
+  font-family: var(--fuente-titulo);
+  font-size: 1.25rem; font-weight: 600;
+  margin-bottom: 24px; line-height: 1.4;
+}
+.opciones { display: flex; flex-direction: column; gap: 12px; }
+.opcion {
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  border-radius: 14px;
+  color: white; font-family: inherit; font-size: 0.95rem;
+  cursor: pointer; text-align: left;
+  transition: all 0.2s ease;
+}
+.opcion:hover {
+  background: rgba(147, 51, 234, 0.2);
+  border-color: var(--morado-claro);
+  transform: translateX(4px);
+}
+.opcion.correcta {
+  background: rgba(34, 197, 94, 0.25);
+  border-color: #22c55e; color: #bbf7d0;
+}
+.opcion.incorrecta {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444; color: #fecaca;
+}
+.opcion:disabled { cursor: default; transform: none; }
+
+.resultado { text-align: center; }
+.resultado .emoji { font-size: 4rem; display: block; margin-bottom: 12px; }
+.resultado h2 {
+  font-family: var(--fuente-titulo);
+  font-size: 1.8rem; margin-bottom: 12px;
+  background: linear-gradient(90deg, var(--morado-claro), var(--rosa));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.resultado .puntaje {
+  font-size: 1.1rem; color: #e9d5ff; margin-bottom: 24px;
+}
+.btn-reiniciar {
+  padding: 14px 30px;
+  background: linear-gradient(90deg, var(--morado), var(--rosa));
+  color: white; border: none; border-radius: 999px;
+  font-family: inherit; font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: transform 0.2s ease;
+  box-shadow: 0 8px 20px rgba(147, 51, 234, 0.3);
+}
+.btn-reiniciar:hover { transform: translateY(-3px); }
+.btn-volver {
+  display: block; text-align: center; margin-top: 22px;
+  color: var(--morado-claro); text-decoration: none; font-size: 0.9rem;
+}
+.btn-volver:hover { color: var(--rosa); }
+</style>
+</head>
+<body>
+
+<div class="quiz-card">
+  <div class="quiz-logo">
+    <img src="logo.svg" alt="StarBalance">
+    <span>StarBalance Quiz</span>
+  </div>
+
+  <div id="quiz-contenido">
+    <h1>🧠 Interactive Quiz</h1>
+    <p class="sub">Test your knowledge with 5 quick questions!</p>
+
+    <div class="progreso-quiz">
+      <div class="progreso-barra" id="progreso-barra"></div>
+    </div>
+
+    <p class="pregunta-num" id="pregunta-num">Question 1 of 5</p>
+    <p class="pregunta" id="pregunta">Cargando...</p>
+    <div class="opciones" id="opciones"></div>
+  </div>
+
+  <div class="resultado" id="resultado" style="display:none;">
+    <span class="emoji" id="resultado-emoji">🎉</span>
+    <h2 id="resultado-titulo">Great job!</h2>
+    <p class="puntaje" id="resultado-puntaje">You scored 0 / 5</p>
+    <button class="btn-reiniciar" id="btn-reiniciar">Try again</button>
+    <a href="index.html" class="btn-volver">← Back to StarBalance</a>
+  </div>
+</div>
+
+<script>
+const preguntas = [
+  { pregunta: "How many hours of sleep should a student aim for each night?", opciones: ["4 hours", "6 hours", "8 hours", "10 hours"], correcta: 2 },
+  { pregunta: "What does the Pomodoro Technique recommend?", opciones: ["Study 25 min, rest 5 min", "Study 2 hours straight", "Study only at night", "Never take breaks"], correcta: 0 },
+  { pregunta: "Which drink helps keep your brain sharp while studying?", opciones: ["Soda", "Water", "Energy drinks", "Coffee only"], correcta: 1 },
+  { pregunta: "What is the best way to remember something long-term?", opciones: ["Read it once", "Spaced repetition", "Cram the night before", "Copy it 10 times"], correcta: 1 },
+  { pregunta: "Why are breaks important while studying?", opciones: ["They waste time", "They help your brain rest and focus", "They're only for fun", "They make you forget"], correcta: 1 }
+];
+
+let indiceActual = 0;
+let puntaje = 0;
+let bloqueado = false;
+
+const elPreguntaNum = document.getElementById('pregunta-num');
+const elPregunta = document.getElementById('pregunta');
+const elOpciones = document.getElementById('opciones');
+const elProgreso = document.getElementById('progreso-barra');
+const elContenido = document.getElementById('quiz-contenido');
+const elResultado = document.getElementById('resultado');
+const elResultadoEmoji = document.getElementById('resultado-emoji');
+const elResultadoTitulo = document.getElementById('resultado-titulo');
+const elResultadoPuntaje = document.getElementById('resultado-puntaje');
+
+function mostrarPregunta() {
+  bloqueado = false;
+  const p = preguntas[indiceActual];
+  elPreguntaNum.textContent = `Question ${indiceActual + 1} of ${preguntas.length}`;
+  elPregunta.textContent = p.pregunta;
+  elOpciones.innerHTML = '';
+  elProgreso.style.width = ((indiceActual / preguntas.length) * 100) + '%';
+
+  p.opciones.forEach((op, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opcion';
+    btn.textContent = op;
+    btn.addEventListener('click', () => seleccionar(i, btn));
+    elOpciones.appendChild(btn);
+  });
+}
+
+function seleccionar(indice, btn) {
+  if (bloqueado) return;
+  bloqueado = true;
+
+  const p = preguntas[indiceActual];
+  const botones = elOpciones.querySelectorAll('.opcion');
+
+  botones.forEach((b, i) => {
+    b.disabled = true;
+    if (i === p.correcta) b.classList.add('correcta');
+  });
+
+  if (indice === p.correcta) {
+    puntaje++;
+  } else {
+    btn.classList.add('incorrecta');
+  }
+
+  setTimeout(() => {
+    indiceActual++;
+    if (indiceActual < preguntas.length) {
+      mostrarPregunta();
+    } else {
+      mostrarResultado();
+    }
+  }, 1200);
+}
+
+function mostrarResultado() {
+  elContenido.style.display = 'none';
+  elResultado.style.display = 'block';
+  elProgreso.style.width = '100%';
+
+  const porcentaje = (puntaje / preguntas.length) * 100;
+  elResultadoPuntaje.textContent = `You scored ${puntaje} / ${preguntas.length}`;
+
+  if (porcentaje === 100) {
+    elResultadoEmoji.textContent = '🏆';
+    elResultadoTitulo.textContent = 'Perfect score!';
+  } else if (porcentaje >= 60) {
+    elResultadoEmoji.textContent = '🎉';
+    elResultadoTitulo.textContent = 'Great job!';
+  } else {
+    elResultadoEmoji.textContent = '💪';
+    elResultadoTitulo.textContent = 'Keep practicing!';
+  }
+}
+
+document.getElementById('btn-reiniciar').addEventListener('click', () => {
+  indiceActual = 0;
+  puntaje = 0;
+  elResultado.style.display = 'none';
+  elContenido.style.display = 'block';
+  mostrarPregunta();
+});
+
+mostrarPregunta();
+</script>
+
+</body>
+</html>
