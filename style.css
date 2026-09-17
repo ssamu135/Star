@@ -229,6 +229,9 @@ body:not(.page-welcome) #lienzo-estrellas { display: none; }
 .hero-fun { background-image: url('https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=1600&q=80'); }
 .hero-advantages { background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1600&q=80'); }
 
+.page-hero:not(.hero-planner):not(.hero-habits):not(.hero-fun):not(.hero-advantages) {
+  background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80');
+}
 .badge {
   display: inline-block;
   background: rgba(255,255,255,0.15);
