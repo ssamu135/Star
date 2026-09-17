@@ -70,14 +70,24 @@
 
       <div class="planner-info">
         <h3>📅 My Calendar</h3>
-        <p>Stay organized and never forget an important date.</p>
-        <ul class="planner-list">
-          <li>✅ Track homework due dates</li>
-          <li>✅ Schedule exam study sessions</li>
-          <li>✅ Plan long-term projects</li>
-          <li>✅ Remember school activities</li>
-        </ul>
-        <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80" alt="Student planning" style="width:100%; border-radius:14px; margin-top:20px;">
+        <p id="fecha-seleccionada">Click a day to add an event.</p>
+
+        <form id="form-evento" class="form-evento">
+          <label for="titulo-evento">Event title</label>
+          <input type="text" id="titulo-evento" placeholder="e.g. Math homework" required>
+
+          <label for="tipo-evento">Type</label>
+          <select id="tipo-evento" required>
+            <option value="hw">📚 Homework</option>
+            <option value="exam">📝 Exam</option>
+            <option value="proj">🎯 Project</option>
+            <option value="act">🎨 Activity</option>
+          </select>
+
+          <button type="submit" class="btn-agregar">+ Add Event</button>
+        </form>
+
+        <div id="lista-eventos" class="lista-eventos"></div>
       </div>
     </div>
   </section>
