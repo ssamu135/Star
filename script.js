@@ -77,7 +77,25 @@ if (elementosReveal.length) {
 const calGrid = document.getElementById('calendar-grid');
 if (calGrid) {
   const calMonth = document.getElementById('cal-month');
+  const fechaSeleccionadaEl = document.getElementById('fecha-seleccionada');
+  const formEvento = document.getElementById('form-evento');
+  const tituloEvento = document.getElementById('titulo-evento');
+  const tipoEvento = document.getElementById('tipo-evento');
+  const listaEventos = document.getElementById('lista-eventos');
+
   let fechaActual = new Date();
+  let diaSeleccionado = null;
+
+  // Cargar eventos guardados
+  let eventos = JSON.parse(localStorage.getItem('starbalance-eventos') || '{}');
+
+  function guardarEventos() {
+    localStorage.setItem('starbalance-eventos', JSON.stringify(eventos));
+  }
+
+  function claveDia(year, month, day) {
+    return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  }
 
   function renderCalendario() {
     calGrid.innerHTML = '';
@@ -90,6 +108,7 @@ if (calGrid) {
     const diasEnMes = new Date(year, month + 1, 0).getDate();
     const diasMesAnterior = new Date(year, month, 0).getDate();
 
+    // Días del mes anterior
     for (let i = primerDia - 1; i >= 0; i--) {
       const d = document.createElement('div');
       d.classList.add('cal-day', 'otro-mes');
@@ -97,23 +116,43 @@ if (calGrid) {
       calGrid.appendChild(d);
     }
 
+    // Días del mes
     const hoy = new Date();
     for (let i = 1; i <= diasEnMes; i++) {
       const d = document.createElement('div');
       d.classList.add('cal-day');
       d.textContent = i;
+
       if (i === hoy.getDate() && month === hoy.getMonth() && year === hoy.getFullYear()) {
         d.classList.add('hoy');
       }
-      if (i === 5) d.classList.add('con-evento', 'ev-hw');
-      if (i === 12) d.classList.add('con-evento', 'ev-exam');
-      if (i === 18) d.classList.add('con-evento', 'ev-proj');
-      if (i === 25) d.classList.add('con-evento', 'ev-act');
-      if (i === 8) d.classList.add('con-evento', 'ev-hw');
-      if (i === 22) d.classList.add('con-evento', 'ev-exam');
+
+      // Marcar día seleccionado
+      if (diaSeleccionado &&
+          diaSeleccionado.year === year &&
+          diaSeleccionado.month === month &&
+          diaSeleccionado.day === i) {
+        d.classList.add('seleccionado');
+      }
+
+      // Marcar eventos existentes
+      const key = claveDia(year, month, i);
+      if (eventos[key] && eventos[key].length > 0) {
+        const tipo = eventos[key][0].tipo;
+        d.classList.add('con-evento', `ev-${tipo}`);
+      }
+
+      // Click para seleccionar el día
+      d.addEventListener('click', () => {
+        diaSeleccionado = { year, month, day: i };
+        renderCalendario();
+        mostrarEventosDelDia();
+      });
+
       calGrid.appendChild(d);
     }
 
+    // Rellenar hasta completar la semana
     const total = primerDia + diasEnMes;
     const restantes = (7 - (total % 7)) % 7;
     for (let i = 1; i <= restantes; i++) {
@@ -124,6 +163,73 @@ if (calGrid) {
     }
   }
 
+  function mostrarEventosDelDia() {
+    if (!diaSeleccionado) {
+      fechaSeleccionadaEl.textContent = 'Click a day to add an event.';
+      listaEventos.innerHTML = '';
+      return;
+    }
+
+    const { year, month, day } = diaSeleccionado;
+    const meses = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    fechaSeleccionadaEl.textContent = `📅 ${meses[month]} ${day}, ${year}`;
+
+    const key = claveDia(year, month, day);
+    const eventosDia = eventos[key] || [];
+
+    if (eventosDia.length === 0) {
+      listaEventos.innerHTML = '<p class="vacio-evento">No events yet. Add one above! ✨</p>';
+      return;
+    }
+
+    listaEventos.innerHTML = '';
+    eventosDia.forEach((ev, idx) => {
+      const item = document.createElement('div');
+      item.classList.add('evento-item', `tipo-${ev.tipo}`);
+      item.innerHTML = `
+        <span class="titulo-evento">${ev.titulo}</span>
+        <button class="btn-borrar" data-idx="${idx}" title="Delete">×</button>
+      `;
+      listaEventos.appendChild(item);
+    });
+
+    // Botones de borrar
+    listaEventos.querySelectorAll('.btn-borrar').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.target.dataset.idx);
+        eventosDia.splice(idx, 1);
+        if (eventosDia.length === 0) delete eventos[key];
+        else eventos[key] = eventosDia;
+        guardarEventos();
+        renderCalendario();
+        mostrarEventosDelDia();
+      });
+    });
+  }
+
+  // Agregar evento
+  formEvento.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (!diaSeleccionado) {
+      alert('Please click a day on the calendar first.');
+      return;
+    }
+
+    const titulo = tituloEvento.value.trim();
+    if (!titulo) return;
+
+    const key = claveDia(diaSeleccionado.year, diaSeleccionado.month, diaSeleccionado.day);
+    if (!eventos[key]) eventos[key] = [];
+    eventos[key].push({ titulo, tipo: tipoEvento.value });
+    guardarEventos();
+
+    tituloEvento.value = '';
+    renderCalendario();
+    mostrarEventosDelDia();
+  });
+
+  // Navegación de meses
   document.getElementById('cal-prev').addEventListener('click', () => {
     fechaActual.setMonth(fechaActual.getMonth() - 1);
     renderCalendario();
@@ -132,5 +238,8 @@ if (calGrid) {
     fechaActual.setMonth(fechaActual.getMonth() + 1);
     renderCalendario();
   });
+
+  // Inicializar
   renderCalendario();
+  mostrarEventosDelDia();
 }
