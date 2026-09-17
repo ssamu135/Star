@@ -100,4 +100,37 @@ if (calGrid) {
     const hoy = new Date();
     for (let i = 1; i <= diasEnMes; i++) {
       const d = document.createElement('div');
-      d.classList.add('cal
+      d.classList.add('cal-day');
+      d.textContent = i;
+      if (i === hoy.getDate() && month === hoy.getMonth() && year === hoy.getFullYear()) {
+        d.classList.add('hoy');
+      }
+      if (i === 5) d.classList.add('con-evento', 'ev-hw');
+      if (i === 12) d.classList.add('con-evento', 'ev-exam');
+      if (i === 18) d.classList.add('con-evento', 'ev-proj');
+      if (i === 25) d.classList.add('con-evento', 'ev-act');
+      if (i === 8) d.classList.add('con-evento', 'ev-hw');
+      if (i === 22) d.classList.add('con-evento', 'ev-exam');
+      calGrid.appendChild(d);
+    }
+
+    const total = primerDia + diasEnMes;
+    const restantes = (7 - (total % 7)) % 7;
+    for (let i = 1; i <= restantes; i++) {
+      const d = document.createElement('div');
+      d.classList.add('cal-day', 'otro-mes');
+      d.textContent = i;
+      calGrid.appendChild(d);
+    }
+  }
+
+  document.getElementById('cal-prev').addEventListener('click', () => {
+    fechaActual.setMonth(fechaActual.getMonth() - 1);
+    renderCalendario();
+  });
+  document.getElementById('cal-next').addEventListener('click', () => {
+    fechaActual.setMonth(fechaActual.getMonth() + 1);
+    renderCalendario();
+  });
+  renderCalendario();
+}
