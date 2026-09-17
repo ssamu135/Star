@@ -167,11 +167,11 @@ body:not(.page-welcome) #lienzo-estrellas { display: none; }
 }
 .page-hero p { font-size: 1.1rem; opacity: 0.95; max-width: 600px; margin: 0 auto; }
 
-/* Imágenes de fondo por página */
-.hero-planner { background-image: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1600&q=80'); }
-.hero-habits { background-image: url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1600&q=80'); }
-.hero-fun { background-image: url('https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=1600&q=80'); }
-.hero-advantages { background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1600&q=80'); }
+/* Paisajes de fondo por página */
+.hero-planner { background-image: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1600&q=80'); }
+.hero-habits { background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1600&q=80'); }
+.hero-fun { background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1600&q=80'); }
+.hero-advantages { background-image: url('https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=1600&q=80'); }
 
 .badge {
   display: inline-block;
